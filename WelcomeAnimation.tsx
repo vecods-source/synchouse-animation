@@ -183,11 +183,12 @@ const CONFIG = {
 
   // Timing (in milliseconds)
   timing: {
-    phase1: 200,
-    phase2: 1200,
-    phase3: 2500,
-    phase4: 4000,
-    complete: 6500,
+    phase1: 200,      // Animation starts
+    phase2: 1000,     // Tagline appears ("Protected by")
+    phase3: 2000,     // Brand name appears ("SyncHouse")
+    phase4: 3500,     // Features appear + shield transforms to check
+    phase5: 5000,     // Fade out starts
+    complete: 6000,   // Animation complete
   },
 
   // Sound enabled
@@ -301,6 +302,7 @@ export function WelcomeAnimation({
     setTimeout(() => setPhase(2), CONFIG.timing.phase2);
     setTimeout(() => setPhase(3), CONFIG.timing.phase3);
     setTimeout(() => setPhase(4), CONFIG.timing.phase4);
+    setTimeout(() => setPhase(5), CONFIG.timing.phase5);
     setTimeout(() => handleComplete(), CONFIG.timing.complete);
   };
 
@@ -310,7 +312,7 @@ export function WelcomeAnimation({
     <div
       dir={CONFIG.isRTL ? "rtl" : "ltr"}
       className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-700 ease-out ${
-        phase >= 4 ? "opacity-0 pointer-events-none" : "opacity-100"
+        phase >= 5 ? "opacity-0 pointer-events-none" : "opacity-100"
       } ${CONFIG.isRTL ? "font-arabic" : ""}`}
     >
       {/* Dark blurred overlay background */}
@@ -389,14 +391,14 @@ export function WelcomeAnimation({
             {tagline}
           </p>
           <h1
-            className={`text-4xl font-bold ${CONFIG.isRTL ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-blue-400 via-blue-300 to-blue-400 bg-clip-text text-transparent transition-all duration-600 ease-out delay-100 ${
-              phase >= 2 ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-3 scale-95"
+            className={`text-4xl font-bold ${CONFIG.isRTL ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-blue-400 via-blue-300 to-blue-400 bg-clip-text text-transparent transition-all duration-600 ease-out ${
+              phase >= 3 ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-3 scale-95"
             }`}
           >
             {brandName}
           </h1>
           <p
-            className={`text-sm text-blue-200/60 transition-all duration-600 ease-out delay-200 ${
+            className={`text-sm text-blue-200/60 transition-all duration-600 ease-out delay-100 ${
               phase >= 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
             }`}
           >
@@ -434,7 +436,7 @@ export function WelcomeAnimation({
         {/* Loading dots */}
         <div
           className={`flex gap-2 mt-4 transition-all duration-500 ease-out ${
-            phase >= 2 && phase < 4 ? "opacity-100" : "opacity-0"
+            phase >= 2 && phase < 5 ? "opacity-100" : "opacity-0"
           }`}
         >
           {[0, 1, 2].map((i) => (
