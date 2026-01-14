@@ -1,28 +1,69 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Shield, Check } from "lucide-react";
 
-const WELCOME_ANIM_KEY = "lazla_welcome_anim_shown";
+// =============================================================================
+// TEMPLATE CONFIGURATION - Customize these values for each project
+// =============================================================================
+const CONFIG = {
+  // Storage key for localStorage (change per project to avoid conflicts)
+  storageKey: "synchouse_welcome_shown",
+
+  // Branding
+  brandName: "SyncHouse",
+  tagline: "Protected by",
+  subtitle: "Your trusted technology partner",
+
+  // Feature badges - promotional messages shown after animation
+  features: [
+    { text: "Free 3 Months", highlight: true },
+    { text: "Maintenance Included", highlight: false },
+    { text: "24/7 Support", highlight: false },
+  ],
+
+  // UI Text
+  clickToEnterText: "Click to enter",
+
+  // Timing (in milliseconds)
+  timing: {
+    phase1: 200,
+    phase2: 1200,
+    phase3: 2500,
+    phase4: 4000,
+    complete: 6500, // Extended to show features
+  },
+
+  // Sound enabled
+  soundEnabled: true,
+};
+// =============================================================================
 
 // Check if animation should show (synchronous check for SSR safety)
 export function shouldShowWelcomeAnimation(): boolean | null {
   if (typeof window === "undefined") return null;
-  return !localStorage.getItem(WELCOME_ANIM_KEY);
+  return !localStorage.getItem(CONFIG.storageKey);
+}
+
+// Reset animation (useful for testing)
+export function resetWelcomeAnimation(): void {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(CONFIG.storageKey);
+  }
 }
 
 // Professional business intro sound using Web Audio API
 function playIntroSound() {
+  if (!CONFIG.soundEnabled) return;
+
   try {
     const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
     const now = audioCtx.currentTime;
 
-    // Create a master gain for overall volume
     const masterGain = audioCtx.createGain();
     masterGain.gain.setValueAtTime(0.6, now);
     masterGain.connect(audioCtx.destination);
 
-    // Create reverb-like effect with delay
     const createTone = (
       freq: number,
       startTime: number,
@@ -44,29 +85,17 @@ function playIntroSound() {
       osc.stop(now + startTime + duration);
     };
 
-    // Deep, warm pad foundation (C3)
     createTone(130.81, 0, 2.5, 0.15, "sine");
-
-    // Subtle fifth harmony (G3)
     createTone(196.00, 0.1, 2.3, 0.08, "sine");
-
-    // First chord tone - warm (E4)
     createTone(329.63, 0.3, 1.8, 0.12, "sine");
-
-    // Second chord tone - resolution (G4)
     createTone(392.00, 0.5, 1.6, 0.10, "sine");
-
-    // Soft high accent (C5) - the "ding"
     createTone(523.25, 0.7, 1.4, 0.08, "sine");
-
-    // Final resolution tone (E5)
     createTone(659.25, 0.9, 1.2, 0.06, "sine");
 
-    // Subtle sub-bass warmth
     const subBass = audioCtx.createOscillator();
     const subGain = audioCtx.createGain();
     subBass.type = "sine";
-    subBass.frequency.setValueAtTime(65.41, now); // C2
+    subBass.frequency.setValueAtTime(65.41, now);
     subGain.gain.setValueAtTime(0, now);
     subGain.gain.linearRampToValueAtTime(0.2, now + 0.1);
     subGain.gain.setValueAtTime(0.2, now + 0.5);
@@ -75,7 +104,6 @@ function playIntroSound() {
     subGain.connect(masterGain);
     subBass.start(now);
     subBass.stop(now + 2.0);
-
   } catch (e) {
     console.error("Audio synthesis failed:", e);
   }
@@ -83,9 +111,20 @@ function playIntroSound() {
 
 interface WelcomeAnimationProps {
   onComplete?: () => void;
+  // Optional overrides for CONFIG values
+  brandName?: string;
+  tagline?: string;
+  subtitle?: string;
+  features?: { text: string; highlight?: boolean }[];
 }
 
-export function WelcomeAnimation({ onComplete }: WelcomeAnimationProps) {
+export function WelcomeAnimation({
+  onComplete,
+  brandName = CONFIG.brandName,
+  tagline = CONFIG.tagline,
+  subtitle = CONFIG.subtitle,
+  features = CONFIG.features,
+}: WelcomeAnimationProps) {
   const [started, setStarted] = useState(false);
   const [phase, setPhase] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -99,18 +138,14 @@ export function WelcomeAnimation({ onComplete }: WelcomeAnimationProps) {
     if (started) return;
     setStarted(true);
 
-    // Mark as seen
-    localStorage.setItem(WELCOME_ANIM_KEY, "true");
-
-    // Play synthesized intro sound
+    localStorage.setItem(CONFIG.storageKey, "true");
     playIntroSound();
 
-    // Phase transitions
-    setTimeout(() => setPhase(1), 200);
-    setTimeout(() => setPhase(2), 1200);
-    setTimeout(() => setPhase(3), 2500);
-    setTimeout(() => setPhase(4), 4000);
-    setTimeout(() => handleComplete(), 5500);
+    setTimeout(() => setPhase(1), CONFIG.timing.phase1);
+    setTimeout(() => setPhase(2), CONFIG.timing.phase2);
+    setTimeout(() => setPhase(3), CONFIG.timing.phase3);
+    setTimeout(() => setPhase(4), CONFIG.timing.phase4);
+    setTimeout(() => handleComplete(), CONFIG.timing.complete);
   };
 
   if (!visible) return null;
@@ -177,7 +212,7 @@ export function WelcomeAnimation({ onComplete }: WelcomeAnimationProps) {
             !started ? "opacity-70" : "opacity-0 translate-y-2"
           }`}
         >
-          Click to enter
+          {CONFIG.clickToEnterText}
         </p>
 
         {/* Text - appears after animation starts */}
@@ -191,27 +226,54 @@ export function WelcomeAnimation({ onComplete }: WelcomeAnimationProps) {
               phase >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
             }`}
           >
-            Protected by
+            {tagline}
           </p>
           <h1
             className={`text-4xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent transition-all duration-600 ease-out delay-100 ${
               phase >= 2 ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-3 scale-95"
             }`}
           >
-            SyncHouse
+            {brandName}
           </h1>
           <p
             className={`text-sm text-muted-foreground transition-all duration-600 ease-out delay-200 ${
               phase >= 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
             }`}
           >
-            Your trusted technology partner
+            {subtitle}
           </p>
         </div>
 
+        {/* Feature badges - promotional messages */}
+        {features.length > 0 && (
+          <div
+            className={`flex flex-wrap justify-center gap-2 mt-4 max-w-sm transition-all duration-600 ease-out ${
+              phase >= 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}
+          >
+            {features.map((feature, index) => (
+              <span
+                key={index}
+                className={`px-3 py-1 text-xs font-medium rounded-full transition-all duration-500 ease-out ${
+                  feature.highlight
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}
+                style={{
+                  transitionDelay: `${index * 100}ms`,
+                  opacity: phase >= 3 ? 1 : 0,
+                  transform: phase >= 3 ? "translateY(0)" : "translateY(10px)"
+                }}
+              >
+                {feature.text}
+              </span>
+            ))}
+          </div>
+        )}
+
         {/* Loading dots */}
         <div
-          className={`flex gap-2 mt-3 transition-all duration-500 ease-out ${
+          className={`flex gap-2 mt-4 transition-all duration-500 ease-out ${
             phase >= 2 && phase < 4 ? "opacity-100" : "opacity-0"
           }`}
         >
