@@ -313,9 +313,8 @@ export function WelcomeAnimation({
         phase >= 4 ? "opacity-0 pointer-events-none" : "opacity-100"
       } ${CONFIG.isRTL ? "font-arabic" : ""}`}
     >
-      {/* Dark blue overlay background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900" />
-      <div className="absolute inset-0 bg-black/40" />
+      {/* Dark blurred overlay background */}
+      <div className="absolute inset-0 bg-blue-950/80 backdrop-blur-md" />
 
       <div className="relative flex flex-col items-center justify-center">
         {/* Shield Icon */}
