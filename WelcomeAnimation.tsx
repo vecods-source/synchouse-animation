@@ -18,8 +18,8 @@ const TEMPLATE_VARS = {
     // Period of maintenance (e.g., "3 Months", "6 Months", "1 Year")
     period: "3 Months",
 
-    // Price value (shown only when isFree is true, to show value they're getting)
-    price: "$500",
+    // Price value in QAR (shown only when isFree is true, to show value they're getting)
+    price: "500 QAR",
 
     // Features included
     features: [

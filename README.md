@@ -41,7 +41,7 @@ const TEMPLATE_VARS = {
     period: "3 Months",
 
     // Price value (shown only when isFree is true, to show value)
-    price: "$500",
+    price: "500 QAR",
 
     // Features included
     features: [
@@ -63,7 +63,7 @@ The `CONFIG` object below will automatically use these variables.
 The badges displayed change based on `maintenance.isFree`:
 
 **When `isFree: true`:**
-- Shows: `Free 3 Months` (highlighted) + `Worth $500` + `24/7 Support`
+- Shows: `Free 3 Months` (highlighted) + `Worth 500 QAR` + `24/7 Support`
 
 **When `isFree: false`:**
 - Shows: `Maintenance Included` + `24/7 Support` (no price shown)
