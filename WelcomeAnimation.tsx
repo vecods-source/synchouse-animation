@@ -10,12 +10,20 @@ const TEMPLATE_VARS = {
   // Client/Project name
   clientName: "CLIENT_NAME",
 
+  // Project status - changes the tagline text
+  // Options: "production" | "development" | "warranty" | "maintenance" | "custom"
+  status: "production" as "production" | "development" | "warranty" | "maintenance" | "custom",
+
+  // Custom tagline (only used when status is "custom")
+  customTagline: "Protected by",
+
   // Maintenance configuration
   maintenance: {
     // Is maintenance free for this client?
     isFree: true,
 
-    // Period of maintenance (e.g., "3 Months", "6 Months", "1 Year")
+    // Period of maintenance (e.g., "3 Months", "6 Months", "1 Year", "" or "0" for none)
+    // If empty or "0", feature badges will NOT be shown
     period: "3 Months",
 
     // Price value in QAR (shown only when isFree is true, to show value they're getting)
@@ -34,8 +42,33 @@ const TEMPLATE_VARS = {
 };
 // =============================================================================
 
+// Status to tagline mapping
+const STATUS_TAGLINES: Record<string, string> = {
+  production: "Protected by",
+  development: "Under Development by",
+  warranty: "Under Warranty by",
+  maintenance: "Maintenance Plan by",
+  custom: TEMPLATE_VARS.customTagline,
+};
+
+// Get tagline based on status
+function getTagline(): string {
+  return STATUS_TAGLINES[TEMPLATE_VARS.status] || "Protected by";
+}
+
+// Check if period is valid (not empty or "0")
+function hasMaintenance(): boolean {
+  const period = TEMPLATE_VARS.maintenance.period.trim();
+  return period !== "" && period !== "0";
+}
+
 // Build features array based on maintenance config
 function buildFeatures() {
+  // If no maintenance period, return empty array (no badges shown)
+  if (!hasMaintenance()) {
+    return [];
+  }
+
   const features: { text: string; highlight: boolean }[] = [];
   const { maintenance, supportLevel } = TEMPLATE_VARS;
 
@@ -63,7 +96,7 @@ const CONFIG = {
 
   // Branding (SyncHouse - don't change)
   brandName: "SyncHouse",
-  tagline: "Protected by",
+  tagline: getTagline(),
   subtitle: "Your trusted technology partner",
 
   // Feature badges - built from TEMPLATE_VARS

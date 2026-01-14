@@ -32,12 +32,20 @@ const TEMPLATE_VARS = {
   // Client/Project name (used for localStorage key)
   clientName: "CLIENT_NAME",
 
+  // Project status - changes the tagline text
+  // Options: "production" | "development" | "warranty" | "maintenance" | "custom"
+  status: "production",
+
+  // Custom tagline (only used when status is "custom")
+  customTagline: "Protected by",
+
   // Maintenance configuration
   maintenance: {
     // Is maintenance free for this client?
     isFree: true,
 
     // Period of maintenance (e.g., "3 Months", "6 Months", "1 Year")
+    // Set to "" or "0" to hide all feature badges
     period: "3 Months",
 
     // Price value (shown only when isFree is true, to show value)
@@ -58,9 +66,25 @@ const TEMPLATE_VARS = {
 
 The `CONFIG` object below will automatically use these variables.
 
+## Project Status (Tagline)
+
+The `status` field changes the tagline above "SyncHouse":
+
+| Status | Tagline Displayed |
+|--------|-------------------|
+| `production` | "Protected by" |
+| `development` | "Under Development by" |
+| `warranty` | "Under Warranty by" |
+| `maintenance` | "Maintenance Plan by" |
+| `custom` | Uses `customTagline` value |
+
+## Maintenance Period
+
+If `maintenance.period` is set to `""` or `"0"`, **no feature badges will be shown** - only the tagline and brand name appear.
+
 ## Free vs Paid Maintenance
 
-The badges displayed change based on `maintenance.isFree`:
+When `maintenance.period` has a value, badges are displayed based on `maintenance.isFree`:
 
 **When `isFree: true`:**
 - Shows: `Free 3 Months` (highlighted) + `Worth 500 QAR` + `24/7 Support`
