@@ -32,15 +32,24 @@ const TEMPLATE_VARS = {
   // Client/Project name (used for localStorage key)
   clientName: "CLIENT_NAME",
 
-  // Free period offer (e.g., "3 Months", "6 Months", "1 Year")
-  freePeriod: "3 Months",
+  // Maintenance configuration
+  maintenance: {
+    // Is maintenance free for this client?
+    isFree: true,
 
-  // Maintenance features included in the package
-  maintenanceFeatures: [
-    "Bug Fixes",
-    "Security Updates",
-    "Performance Monitoring",
-  ],
+    // Period of maintenance (e.g., "3 Months", "6 Months", "1 Year")
+    period: "3 Months",
+
+    // Price value (shown only when isFree is true, to show value)
+    price: "$500",
+
+    // Features included
+    features: [
+      "Bug Fixes",
+      "Security Updates",
+      "Performance Monitoring",
+    ],
+  },
 
   // Support level (e.g., "24/7", "Business Hours", "Email")
   supportLevel: "24/7",
@@ -48,6 +57,16 @@ const TEMPLATE_VARS = {
 ```
 
 The `CONFIG` object below will automatically use these variables.
+
+## Free vs Paid Maintenance
+
+The badges displayed change based on `maintenance.isFree`:
+
+**When `isFree: true`:**
+- Shows: `Free 3 Months` (highlighted) + `Worth $500` + `24/7 Support`
+
+**When `isFree: false`:**
+- Shows: `Maintenance Included` + `24/7 Support` (no price shown)
 
 ## Usage
 

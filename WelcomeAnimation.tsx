@@ -10,20 +10,49 @@ const TEMPLATE_VARS = {
   // Client/Project name
   clientName: "CLIENT_NAME",
 
-  // Free period offer
-  freePeriod: "3 Months",
+  // Maintenance configuration
+  maintenance: {
+    // Is maintenance free for this client?
+    isFree: true,
 
-  // Maintenance features included
-  maintenanceFeatures: [
-    "Bug Fixes",
-    "Security Updates",
-    "Performance Monitoring",
-  ],
+    // Period of maintenance (e.g., "3 Months", "6 Months", "1 Year")
+    period: "3 Months",
+
+    // Price value (shown only when isFree is true, to show value they're getting)
+    price: "$500",
+
+    // Features included
+    features: [
+      "Bug Fixes",
+      "Security Updates",
+      "Performance Monitoring",
+    ],
+  },
 
   // Support level
   supportLevel: "24/7",
 };
 // =============================================================================
+
+// Build features array based on maintenance config
+function buildFeatures() {
+  const features: { text: string; highlight: boolean }[] = [];
+  const { maintenance, supportLevel } = TEMPLATE_VARS;
+
+  if (maintenance.isFree) {
+    // Free maintenance: show "Free X Months" highlighted + price value
+    features.push({ text: `Free ${maintenance.period}`, highlight: true });
+    features.push({ text: `Worth ${maintenance.price}`, highlight: false });
+  } else {
+    // Paid maintenance: just show "Maintenance Included"
+    features.push({ text: "Maintenance Included", highlight: false });
+  }
+
+  // Always show support level
+  features.push({ text: `${supportLevel} Support`, highlight: false });
+
+  return features;
+}
 
 // =============================================================================
 // TEMPLATE CONFIGURATION - Customize these values for each project
@@ -38,11 +67,7 @@ const CONFIG = {
   subtitle: "Your trusted technology partner",
 
   // Feature badges - built from TEMPLATE_VARS
-  features: [
-    { text: `Free ${TEMPLATE_VARS.freePeriod}`, highlight: true },
-    { text: "Maintenance Included", highlight: false },
-    { text: `${TEMPLATE_VARS.supportLevel} Support`, highlight: false },
-  ],
+  features: buildFeatures(),
 
   // UI Text
   clickToEnterText: "Click to enter",
