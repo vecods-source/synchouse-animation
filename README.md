@@ -6,12 +6,12 @@ A reusable welcome/intro animation component for React projects with configurabl
 
 - Shield icon with animated pulse rings
 - "Protected by SyncHouse" branding reveal
-- **Feature badges** (Free 3 Months, Maintenance Included, 24/7 Support)
+- **Feature badges** (Free period, Maintenance Included, Support level)
 - Smooth phase-based transitions
 - Synthesized intro sound using Web Audio API
 - localStorage persistence (shows only once per user)
 - Click-to-start interaction
-- Fully configurable via props or CONFIG object
+- Fully configurable via template variables
 
 ## Dependencies
 
@@ -22,22 +22,32 @@ A reusable welcome/intro animation component for React projects with configurabl
 ## Quick Start
 
 1. Copy `WelcomeAnimation.tsx` to your project's components folder
-2. Edit the `CONFIG` object at the top of the file to customize:
+2. Edit the `TEMPLATE_VARS` object at the top of the file:
 
 ```typescript
-const CONFIG = {
-  storageKey: "your_project_welcome_shown",  // Unique per project
-  brandName: "SyncHouse",
-  tagline: "Protected by",
-  subtitle: "Your trusted technology partner",
-  features: [
-    { text: "Free 3 Months", highlight: true },
-    { text: "Maintenance Included", highlight: false },
-    { text: "24/7 Support", highlight: false },
+// =============================================================================
+// TEMPLATE VARIABLES - Change these per project/client
+// =============================================================================
+const TEMPLATE_VARS = {
+  // Client/Project name (used for localStorage key)
+  clientName: "CLIENT_NAME",
+
+  // Free period offer (e.g., "3 Months", "6 Months", "1 Year")
+  freePeriod: "3 Months",
+
+  // Maintenance features included in the package
+  maintenanceFeatures: [
+    "Bug Fixes",
+    "Security Updates",
+    "Performance Monitoring",
   ],
-  soundEnabled: true,
+
+  // Support level (e.g., "24/7", "Business Hours", "Email")
+  supportLevel: "24/7",
 };
 ```
+
+The `CONFIG` object below will automatically use these variables.
 
 ## Usage
 

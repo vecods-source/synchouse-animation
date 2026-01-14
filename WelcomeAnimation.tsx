@@ -4,22 +4,44 @@ import { useState, useCallback } from "react";
 import { Shield, Check } from "lucide-react";
 
 // =============================================================================
+// TEMPLATE VARIABLES - Change these per project/client
+// =============================================================================
+const TEMPLATE_VARS = {
+  // Client/Project name
+  clientName: "CLIENT_NAME",
+
+  // Free period offer
+  freePeriod: "3 Months",
+
+  // Maintenance features included
+  maintenanceFeatures: [
+    "Bug Fixes",
+    "Security Updates",
+    "Performance Monitoring",
+  ],
+
+  // Support level
+  supportLevel: "24/7",
+};
+// =============================================================================
+
+// =============================================================================
 // TEMPLATE CONFIGURATION - Customize these values for each project
 // =============================================================================
 const CONFIG = {
   // Storage key for localStorage (change per project to avoid conflicts)
-  storageKey: "synchouse_welcome_shown",
+  storageKey: `synchouse_welcome_${TEMPLATE_VARS.clientName.toLowerCase().replace(/\s+/g, '_')}`,
 
-  // Branding
+  // Branding (SyncHouse - don't change)
   brandName: "SyncHouse",
   tagline: "Protected by",
   subtitle: "Your trusted technology partner",
 
-  // Feature badges - promotional messages shown after animation
+  // Feature badges - built from TEMPLATE_VARS
   features: [
-    { text: "Free 3 Months", highlight: true },
+    { text: `Free ${TEMPLATE_VARS.freePeriod}`, highlight: true },
     { text: "Maintenance Included", highlight: false },
-    { text: "24/7 Support", highlight: false },
+    { text: `${TEMPLATE_VARS.supportLevel} Support`, highlight: false },
   ],
 
   // UI Text
@@ -31,7 +53,7 @@ const CONFIG = {
     phase2: 1200,
     phase3: 2500,
     phase4: 4000,
-    complete: 6500, // Extended to show features
+    complete: 6500,
   },
 
   // Sound enabled
