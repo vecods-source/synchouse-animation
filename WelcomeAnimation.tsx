@@ -309,11 +309,15 @@ export function WelcomeAnimation({
   return (
     <div
       dir={CONFIG.isRTL ? "rtl" : "ltr"}
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-background transition-all duration-700 ease-out ${
+      className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-700 ease-out ${
         phase >= 4 ? "opacity-0 pointer-events-none" : "opacity-100"
       } ${CONFIG.isRTL ? "font-arabic" : ""}`}
     >
-      <div className="flex flex-col items-center justify-center">
+      {/* Dark blue overlay background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900" />
+      <div className="absolute inset-0 bg-black/40" />
+
+      <div className="relative flex flex-col items-center justify-center">
         {/* Shield Icon */}
         <div
           className="relative cursor-pointer"
@@ -321,7 +325,7 @@ export function WelcomeAnimation({
         >
           {/* Outer rings - smooth pulse effect */}
           <div
-            className={`absolute inset-0 rounded-full bg-primary/20 transition-all duration-1000 ease-out ${
+            className={`absolute inset-0 rounded-full bg-blue-500/20 transition-all duration-1000 ease-out ${
               started && phase >= 1 && phase < 3
                 ? "scale-[2.5] opacity-0"
                 : started
@@ -330,7 +334,7 @@ export function WelcomeAnimation({
             }`}
           />
           <div
-            className={`absolute inset-0 rounded-full bg-primary/30 transition-all duration-800 ease-out delay-75 ${
+            className={`absolute inset-0 rounded-full bg-blue-400/30 transition-all duration-800 ease-out delay-75 ${
               started && phase >= 1 && phase < 3
                 ? "scale-[2] opacity-0"
                 : started
@@ -341,9 +345,9 @@ export function WelcomeAnimation({
 
           {/* Main icon container */}
           <div
-            className={`relative w-24 h-24 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-xl shadow-primary/25 transition-all duration-500 ease-out ${
+            className={`relative w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl shadow-blue-500/25 transition-all duration-500 ease-out ${
               !started
-                ? "hover:scale-110 hover:shadow-2xl hover:shadow-primary/30 active:scale-95"
+                ? "hover:scale-110 hover:shadow-2xl hover:shadow-blue-500/30 active:scale-95"
                 : phase >= 1
                   ? "scale-100"
                   : "scale-95"
@@ -365,7 +369,7 @@ export function WelcomeAnimation({
 
         {/* Click to enter text - only before animation */}
         <p
-          className={`text-base text-muted-foreground mt-3 transition-all duration-500 ease-out ${
+          className={`text-base text-blue-200/70 mt-3 transition-all duration-500 ease-out ${
             !started ? "opacity-70" : "opacity-0 translate-y-2"
           }`}
         >
@@ -379,21 +383,21 @@ export function WelcomeAnimation({
           }`}
         >
           <p
-            className={`text-lg font-medium text-foreground/80 transition-all duration-600 ease-out ${
+            className={`text-lg font-medium text-blue-100/80 transition-all duration-600 ease-out ${
               phase >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
             }`}
           >
             {tagline}
           </p>
           <h1
-            className={`text-4xl font-bold ${CONFIG.isRTL ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent transition-all duration-600 ease-out delay-100 ${
+            className={`text-4xl font-bold ${CONFIG.isRTL ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-blue-400 via-blue-300 to-blue-400 bg-clip-text text-transparent transition-all duration-600 ease-out delay-100 ${
               phase >= 2 ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-3 scale-95"
             }`}
           >
             {brandName}
           </h1>
           <p
-            className={`text-sm text-muted-foreground transition-all duration-600 ease-out delay-200 ${
+            className={`text-sm text-blue-200/60 transition-all duration-600 ease-out delay-200 ${
               phase >= 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
             }`}
           >
@@ -413,8 +417,8 @@ export function WelcomeAnimation({
                 key={index}
                 className={`px-3 py-1 text-xs font-medium rounded-full transition-all duration-500 ease-out ${
                   feature.highlight
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
+                    ? "bg-blue-500 text-white"
+                    : "bg-blue-900/50 text-blue-200/80 border border-blue-700/30"
                 }`}
                 style={{
                   transitionDelay: `${index * 100}ms`,
@@ -437,7 +441,7 @@ export function WelcomeAnimation({
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="w-2 h-2 rounded-full bg-primary/70 animate-bounce"
+              className="w-2 h-2 rounded-full bg-blue-400/70 animate-bounce"
               style={{ animationDelay: `${i * 150}ms`, animationDuration: "1s" }}
             />
           ))}
