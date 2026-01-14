@@ -10,12 +10,19 @@ const TEMPLATE_VARS = {
   // Client/Project name
   clientName: "CLIENT_NAME",
 
+  // Language: "en" (English) or "ar" (Arabic with RTL)
+  language: "en" as "en" | "ar",
+
   // Project status - changes the tagline text
   // Options: "production" | "development" | "warranty" | "maintenance" | "custom"
   status: "production" as "production" | "development" | "warranty" | "maintenance" | "custom",
 
   // Custom tagline (only used when status is "custom")
-  customTagline: "Protected by",
+  // Provide both languages
+  customTagline: {
+    en: "Protected by",
+    ar: "محمي بواسطة",
+  },
 
   // Maintenance configuration
   maintenance: {
@@ -24,7 +31,10 @@ const TEMPLATE_VARS = {
 
     // Period of maintenance (e.g., "3 Months", "6 Months", "1 Year", "" or "0" for none)
     // If empty or "0", feature badges will NOT be shown
-    period: "3 Months",
+    period: {
+      en: "3 Months",
+      ar: "3 أشهر",
+    },
 
     // Price value in QAR (shown only when isFree is true, to show value they're getting)
     price: "500 QAR",
@@ -42,23 +52,72 @@ const TEMPLATE_VARS = {
 };
 // =============================================================================
 
-// Status to tagline mapping
-const STATUS_TAGLINES: Record<string, string> = {
-  production: "Protected by",
-  development: "Under Development by",
-  warranty: "Under Warranty by",
-  maintenance: "Maintenance Plan by",
-  custom: TEMPLATE_VARS.customTagline,
+// =============================================================================
+// TRANSLATIONS
+// =============================================================================
+const TRANSLATIONS = {
+  en: {
+    clickToEnter: "Click to enter",
+    subtitle: "Your trusted technology partner",
+    statusTaglines: {
+      production: "Protected by",
+      development: "Under Development by",
+      warranty: "Under Warranty by",
+      maintenance: "Maintenance Plan by",
+    },
+    free: "Free",
+    worth: "Worth",
+    maintenanceIncluded: "Maintenance Included",
+    support: "Support",
+  },
+  ar: {
+    clickToEnter: "انقر للدخول",
+    subtitle: "شريكك التقني الموثوق",
+    statusTaglines: {
+      production: "محمي بواسطة",
+      development: "قيد التطوير بواسطة",
+      warranty: "تحت الضمان من",
+      maintenance: "خطة الصيانة من",
+    },
+    free: "مجاناً",
+    worth: "بقيمة",
+    maintenanceIncluded: "الصيانة مشمولة",
+    support: "دعم",
+  },
 };
+// =============================================================================
 
-// Get tagline based on status
+// Get current language translations
+function t() {
+  return TRANSLATIONS[TEMPLATE_VARS.language];
+}
+
+// Check if RTL (Arabic)
+function isRTL(): boolean {
+  return TEMPLATE_VARS.language === "ar";
+}
+
+// Get tagline based on status and language
 function getTagline(): string {
-  return STATUS_TAGLINES[TEMPLATE_VARS.status] || "Protected by";
+  const translations = t();
+  if (TEMPLATE_VARS.status === "custom") {
+    return TEMPLATE_VARS.customTagline[TEMPLATE_VARS.language];
+  }
+  return translations.statusTaglines[TEMPLATE_VARS.status] || translations.statusTaglines.production;
+}
+
+// Get maintenance period in current language
+function getPeriod(): string {
+  const period = TEMPLATE_VARS.maintenance.period;
+  if (typeof period === "string") {
+    return period;
+  }
+  return period[TEMPLATE_VARS.language] || period.en;
 }
 
 // Check if period is valid (not empty or "0")
 function hasMaintenance(): boolean {
-  const period = TEMPLATE_VARS.maintenance.period.trim();
+  const period = getPeriod().trim();
   return period !== "" && period !== "0";
 }
 
@@ -71,18 +130,32 @@ function buildFeatures() {
 
   const features: { text: string; highlight: boolean }[] = [];
   const { maintenance, supportLevel } = TEMPLATE_VARS;
+  const translations = t();
+  const period = getPeriod();
 
   if (maintenance.isFree) {
     // Free maintenance: show "Free X Months" highlighted + price value
-    features.push({ text: `Free ${maintenance.period}`, highlight: true });
-    features.push({ text: `Worth ${maintenance.price}`, highlight: false });
+    features.push({
+      text: `${translations.free} ${period}`,
+      highlight: true
+    });
+    features.push({
+      text: `${translations.worth} ${maintenance.price}`,
+      highlight: false
+    });
   } else {
     // Paid maintenance: just show "Maintenance Included"
-    features.push({ text: "Maintenance Included", highlight: false });
+    features.push({
+      text: translations.maintenanceIncluded,
+      highlight: false
+    });
   }
 
   // Always show support level
-  features.push({ text: `${supportLevel} Support`, highlight: false });
+  features.push({
+    text: `${translations.support} ${supportLevel}`,
+    highlight: false
+  });
 
   return features;
 }
@@ -97,13 +170,16 @@ const CONFIG = {
   // Branding (SyncHouse - don't change)
   brandName: "SyncHouse",
   tagline: getTagline(),
-  subtitle: "Your trusted technology partner",
+  subtitle: t().subtitle,
 
   // Feature badges - built from TEMPLATE_VARS
   features: buildFeatures(),
 
   // UI Text
-  clickToEnterText: "Click to enter",
+  clickToEnterText: t().clickToEnter,
+
+  // RTL support
+  isRTL: isRTL(),
 
   // Timing (in milliseconds)
   timing: {
@@ -232,9 +308,10 @@ export function WelcomeAnimation({
 
   return (
     <div
+      dir={CONFIG.isRTL ? "rtl" : "ltr"}
       className={`fixed inset-0 z-50 flex items-center justify-center bg-background transition-all duration-700 ease-out ${
         phase >= 4 ? "opacity-0 pointer-events-none" : "opacity-100"
-      }`}
+      } ${CONFIG.isRTL ? "font-arabic" : ""}`}
     >
       <div className="flex flex-col items-center justify-center">
         {/* Shield Icon */}
@@ -309,7 +386,7 @@ export function WelcomeAnimation({
             {tagline}
           </p>
           <h1
-            className={`text-4xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent transition-all duration-600 ease-out delay-100 ${
+            className={`text-4xl font-bold ${CONFIG.isRTL ? "bg-gradient-to-l" : "bg-gradient-to-r"} from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent transition-all duration-600 ease-out delay-100 ${
               phase >= 2 ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-3 scale-95"
             }`}
           >

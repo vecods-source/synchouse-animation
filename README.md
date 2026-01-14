@@ -7,6 +7,7 @@ A reusable welcome/intro animation component for React projects with configurabl
 - Shield icon with animated pulse rings
 - "Protected by SyncHouse" branding reveal
 - **Feature badges** (Free period, Maintenance Included, Support level)
+- **Multi-language support** (English & Arabic with RTL)
 - Smooth phase-based transitions
 - Synthesized intro sound using Web Audio API
 - localStorage persistence (shows only once per user)
@@ -32,51 +33,69 @@ const TEMPLATE_VARS = {
   // Client/Project name (used for localStorage key)
   clientName: "CLIENT_NAME",
 
+  // Language: "en" (English) or "ar" (Arabic with RTL)
+  language: "en",
+
   // Project status - changes the tagline text
   // Options: "production" | "development" | "warranty" | "maintenance" | "custom"
   status: "production",
 
   // Custom tagline (only used when status is "custom")
-  customTagline: "Protected by",
+  customTagline: {
+    en: "Protected by",
+    ar: "محمي بواسطة",
+  },
 
   // Maintenance configuration
   maintenance: {
-    // Is maintenance free for this client?
     isFree: true,
-
-    // Period of maintenance (e.g., "3 Months", "6 Months", "1 Year")
-    // Set to "" or "0" to hide all feature badges
-    period: "3 Months",
-
-    // Price value (shown only when isFree is true, to show value)
+    period: {
+      en: "3 Months",
+      ar: "3 أشهر",
+    },
     price: "500 QAR",
-
-    // Features included
-    features: [
-      "Bug Fixes",
-      "Security Updates",
-      "Performance Monitoring",
-    ],
+    features: [...],
   },
 
-  // Support level (e.g., "24/7", "Business Hours", "Email")
   supportLevel: "24/7",
 };
 ```
 
 The `CONFIG` object below will automatically use these variables.
 
+## Language Support (EN/AR)
+
+Set `language` to switch between English and Arabic:
+
+```typescript
+language: "en",  // English (LTR)
+language: "ar",  // Arabic (RTL)
+```
+
+**Arabic mode automatically:**
+- Applies RTL direction
+- Translates all UI text
+- Reverses gradient direction
+
+| Text | English | Arabic |
+|------|---------|--------|
+| Click to enter | "Click to enter" | "انقر للدخول" |
+| Subtitle | "Your trusted technology partner" | "شريكك التقني الموثوق" |
+| Free | "Free 3 Months" | "مجاناً 3 أشهر" |
+| Worth | "Worth 500 QAR" | "بقيمة 500 QAR" |
+| Support | "24/7 Support" | "دعم 24/7" |
+
 ## Project Status (Tagline)
 
 The `status` field changes the tagline above "SyncHouse":
 
-| Status | Tagline Displayed |
-|--------|-------------------|
-| `production` | "Protected by" |
-| `development` | "Under Development by" |
-| `warranty` | "Under Warranty by" |
-| `maintenance` | "Maintenance Plan by" |
-| `custom` | Uses `customTagline` value |
+| Status | English | Arabic |
+|--------|---------|--------|
+| `production` | "Protected by" | "محمي بواسطة" |
+| `development` | "Under Development by" | "قيد التطوير بواسطة" |
+| `warranty` | "Under Warranty by" | "تحت الضمان من" |
+| `maintenance` | "Maintenance Plan by" | "خطة الصيانة من" |
+| `custom` | Uses `customTagline.en` | Uses `customTagline.ar` |
 
 ## Maintenance Period
 
