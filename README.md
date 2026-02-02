@@ -1,166 +1,176 @@
-# SyncHouse Welcome Animation Template
+# SyncHouse Welcome Animation
 
-A reusable welcome/intro animation component for React projects with configurable branding and promotional features.
+A simple welcome animation component for React/Next.js projects. Shows once per user, takes full viewport, and supports dark/light modes.
 
-## Features
+## Installation
 
-- Shield icon with animated pulse rings
-- "Protected by SyncHouse" branding reveal
-- **Feature badges** (Free period, Maintenance Included, Support level)
-- **Multi-language support** (English & Arabic with RTL)
-- Smooth phase-based transitions
-- Synthesized intro sound using Web Audio API
-- localStorage persistence (shows only once per user)
-- Click-to-start interaction
-- Fully configurable via template variables
+```bash
+pnpm add synchouse-welcome-animation
+```
 
-## Dependencies
+Or install from local path:
+
+```bash
+pnpm add ../path/to/synchouse-welcome-animation
+```
+
+## Requirements
 
 - React 18+
-- lucide-react (for Shield and Check icons)
-- Tailwind CSS
-
-## Quick Start
-
-1. Copy `WelcomeAnimation.tsx` to your project's components folder
-2. Edit the `TEMPLATE_VARS` object at the top of the file:
-
-```typescript
-// =============================================================================
-// TEMPLATE VARIABLES - Change these per project/client
-// =============================================================================
-const TEMPLATE_VARS = {
-  // Client/Project name (used for localStorage key)
-  clientName: "CLIENT_NAME",
-
-  // Language: "en" (English) or "ar" (Arabic with RTL)
-  language: "en",
-
-  // Project status - changes the tagline text
-  // Options: "production" | "development" | "warranty" | "maintenance" | "custom"
-  status: "production",
-
-  // Custom tagline (only used when status is "custom")
-  customTagline: {
-    en: "Protected by",
-    ar: "محمي بواسطة",
-  },
-
-  // Maintenance configuration
-  maintenance: {
-    isFree: true,
-    period: {
-      en: "3 Months",
-      ar: "3 أشهر",
-    },
-    price: "500 QAR",
-    features: [...],
-  },
-
-  supportLevel: "24/7",
-};
-```
-
-The `CONFIG` object below will automatically use these variables.
-
-## Language Support (EN/AR)
-
-Set `language` to switch between English and Arabic:
-
-```typescript
-language: "en",  // English (LTR)
-language: "ar",  // Arabic (RTL)
-```
-
-**Arabic mode automatically:**
-- Applies RTL direction
-- Translates all UI text
-- Reverses gradient direction
-
-| Text | English | Arabic |
-|------|---------|--------|
-| Click to enter | "Click to enter" | "انقر للدخول" |
-| Subtitle | "Your trusted technology partner" | "شريكك التقني الموثوق" |
-| Free | "Free 3 Months" | "مجاناً 3 أشهر" |
-| Worth | "Worth 500 QAR" | "بقيمة 500 QAR" |
-| Support | "24/7 Support" | "دعم 24/7" |
-
-## Project Status (Tagline)
-
-The `status` field changes the tagline above "SyncHouse":
-
-| Status | English | Arabic |
-|--------|---------|--------|
-| `production` | "Protected by" | "محمي بواسطة" |
-| `development` | "Under Development by" | "قيد التطوير بواسطة" |
-| `warranty` | "Under Warranty by" | "تحت الضمان من" |
-| `maintenance` | "Maintenance Plan by" | "خطة الصيانة من" |
-| `custom` | Uses `customTagline.en` | Uses `customTagline.ar` |
-
-## Maintenance Period
-
-If `maintenance.period` is set to `""` or `"0"`, **no feature badges will be shown** - only the tagline and brand name appear.
-
-## Free vs Paid Maintenance
-
-When `maintenance.period` has a value, badges are displayed based on `maintenance.isFree`:
-
-**When `isFree: true`:**
-- Shows: `Free 3 Months` (highlighted) + `Worth 500 QAR` + `24/7 Support`
-
-**When `isFree: false`:**
-- Shows: `Maintenance Included` + `24/7 Support` (no price shown)
+- Tailwind CSS (for styling classes)
 
 ## Usage
 
+### Basic Usage
+
 ```tsx
-import { WelcomeAnimation, shouldShowWelcomeAnimation } from "./WelcomeAnimation";
+import { WelcomeAnimation } from "synchouse-welcome-animation";
 
 function App() {
-  const [showWelcome, setShowWelcome] = useState(() => shouldShowWelcomeAnimation());
-
   return (
     <>
-      {showWelcome && (
-        <WelcomeAnimation onComplete={() => setShowWelcome(false)} />
-      )}
+      <WelcomeAnimation />
       {/* Your app content */}
     </>
   );
 }
 ```
 
-## Props (Optional Overrides)
-
-You can also override CONFIG values via props:
+### With All Options
 
 ```tsx
-<WelcomeAnimation
-  brandName="YourBrand"
-  tagline="Powered by"
-  subtitle="Custom tagline here"
-  features={[
-    { text: "Feature 1", highlight: true },
-    { text: "Feature 2", highlight: false },
-  ]}
-  onComplete={() => setShowWelcome(false)}
-/>
+import { WelcomeAnimation } from "synchouse-welcome-animation";
+
+function App() {
+  return (
+    <WelcomeAnimation
+      mode="dark"
+      status="production"
+      clientName="MyProject"
+      onComplete={() => console.log("Animation finished!")}
+    />
+  );
+}
 ```
+
+### With Conditional Rendering
+
+```tsx
+import { useState, useEffect } from "react";
+import {
+  WelcomeAnimation,
+  shouldShowWelcomeAnimation
+} from "synchouse-welcome-animation";
+
+function App() {
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    const shouldShow = shouldShowWelcomeAnimation("MyProject");
+    if (shouldShow) {
+      setShowWelcome(true);
+    }
+  }, []);
+
+  return (
+    <>
+      {showWelcome && (
+        <WelcomeAnimation
+          clientName="MyProject"
+          onComplete={() => setShowWelcome(false)}
+        />
+      )}
+      <main>{/* Your app content */}</main>
+    </>
+  );
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `mode` | `"dark"` \| `"light"` | `"dark"` | Color scheme |
+| `status` | `"production"` \| `"maintenance"` \| `"development"` | `"production"` | Message displayed above brand |
+| `clientName` | `string` | `"client"` | Used for localStorage key (unique per project) |
+| `onComplete` | `() => void` | - | Callback when animation finishes |
+
+## Status Messages
+
+| Status | Message Displayed |
+|--------|-------------------|
+| `production` | "Created by" |
+| `maintenance` | "Maintained by" |
+| `development` | "Under Development by" |
+
+## Color Modes
+
+### Dark Mode (default)
+- Black background
+- White text
+- White icon circle with black icon
+
+### Light Mode
+- White background
+- Black text
+- Black icon circle with white icon
 
 ## Utility Functions
 
 ```tsx
-// Check if animation should show
-shouldShowWelcomeAnimation(); // returns true/false/null
+import {
+  shouldShowWelcomeAnimation,
+  resetWelcomeAnimation
+} from "synchouse-welcome-animation";
 
-// Reset animation (for testing)
-resetWelcomeAnimation();
+// Check if animation should show (returns true/false/null)
+const shouldShow = shouldShowWelcomeAnimation("MyProject");
+
+// Reset animation for testing (clears localStorage)
+resetWelcomeAnimation("MyProject");
 ```
 
-## Customization
+## How It Works
 
-- **Colors**: Modify `bg-primary` and related Tailwind classes
-- **Timing**: Adjust values in `CONFIG.timing`
-- **Sound**: Set `CONFIG.soundEnabled = false` to disable
-- **Features**: Add/remove items from `CONFIG.features` array
-  - Set `highlight: true` for primary-colored badges
+1. Component checks localStorage for previous view
+2. If not seen before, displays full-screen overlay (100vw x 100vh)
+3. User clicks the shield icon to start animation
+4. Animation sequence:
+   - Shield icon pulses
+   - Status message fades in ("Created by", etc.)
+   - "SyncHouse" brand name appears
+   - Shield transforms to checkmark
+   - Overlay fades out
+5. Stores flag in localStorage so it won't show again
+
+## Tailwind CSS Setup
+
+Make sure your Tailwind config includes the library in content paths:
+
+```js
+// tailwind.config.js
+module.exports = {
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/synchouse-welcome-animation/**/*.{js,mjs}",
+  ],
+  // ...
+}
+```
+
+## Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build library
+pnpm build
+
+# Watch mode
+pnpm dev
+```
+
+## License
+
+MIT
